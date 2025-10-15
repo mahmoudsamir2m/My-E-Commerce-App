@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 export default function AddToCart({productId, className } : {productId: string; className?: string}) {
 
     const [isLoading, setIsLoading] = useState(false);
-    const { status } = useSession();
+    const { status ,data:session} = useSession();
     const router = useRouter();
 
     const { getCart, setCartData } = useContext(CartContext);
@@ -22,11 +22,10 @@ export default function AddToCart({productId, className } : {productId: string; 
             return;
         }
         setIsLoading(true);
-        const data = await addToCartAction(productId);
+        const data = await addToCartAction(productId,session.token);
         setCartData(data);
         data.status == 'success' && toast.success(data.message);
         setIsLoading(false);
-        console.log(data);
             }
 
   return (

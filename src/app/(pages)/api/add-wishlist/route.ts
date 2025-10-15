@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/auth'
+
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions)
+  const token = request.headers.get('token')
 
-  if (!session || !session.token) {
+  if (!token) {
     return NextResponse.json({ status: 'error', message: 'Unauthorized' }, { status: 401 })
   }
 
@@ -21,7 +20,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       body: JSON.stringify({ productId }),
       headers: {
-        token: session.token as string,
+        token: token as string,
         'Content-Type': 'application/json',
       },
     })

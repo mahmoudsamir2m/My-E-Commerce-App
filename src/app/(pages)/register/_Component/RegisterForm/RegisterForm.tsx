@@ -19,22 +19,30 @@ import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { SuccessSignupResponse, FailedSignupResponse } from "@/interfaces/signup"
 
-const formSchema = z.object({
-  name: z.string().nonempty("Name is Required"),
-  email: z.string().nonempty("Email is Required").email("Invalid email"),
-  password: z
-    .string()
-    .nonempty("Password is Required")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
-      "Password must be at least 8 characters, include uppercase, lowercase, number, and special character"
-    ),
-  rePassword: z.string().nonempty("Re-enter Password is Required"),
-  phone: z.string().nonempty("Phone is Required"),
-}).refine((data) => data.password === data.rePassword, {
-  message: "Passwords don't match",
-  path: ["rePassword"],
-})
+const formSchema = z
+  .object({
+    name: z.string().nonempty("Name is Required"),
+    email: z.string().nonempty("Email is Required").email("Invalid email"),
+    password: z
+      .string()
+      .nonempty("Password is Required")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+        "Password must be at least 8 characters, include uppercase, lowercase, number, and special character"
+      ),
+    rePassword: z.string().nonempty("Re-enter Password is Required"),
+    phone: z
+      .string()
+      .nonempty("Phone is Required")
+      .regex(
+        /^(\+201|01)[0-2,5][0-9]{8}$/,
+        "Enter a valid Egyptian phone number"
+      ),
+  })
+  .refine((data) => data.password === data.rePassword, {
+    message: "Passwords don't match",
+    path: ["rePassword"],
+  });
 
 type FormFields = z.infer<typeof formSchema>
 

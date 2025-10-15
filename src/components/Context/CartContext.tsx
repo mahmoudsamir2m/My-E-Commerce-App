@@ -1,6 +1,9 @@
 "use client"
 import { CartResponse } from "@/interfaces";
 import { createContext, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+
+
 
 export const CartContext = createContext<{
     cartData: CartResponse | null,
@@ -23,9 +26,13 @@ export default function CartContextProvider({children} : {children: React.ReactN
     const [cartData, setCartData] = useState<CartResponse | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [userId, setUserId] = useState<string>('');
-
+const { status ,data:session} = useSession();
     async function getCart() {
-        const response = await fetch('/api/get-cart');
+        const response = await fetch('/api/get-cart',{
+            headers: {
+                token: session?.token || ''
+            }
+        });
         const data: CartResponse = await response.json();
         setCartData(data);
         if (data && data.data && data.data.cartOwner) {

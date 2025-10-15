@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 export default function AddToWishlist({productId, product} : {productId: string, product: ProductI}) {
 
     const [isLoading, setIsLoading] = useState(false);
-    const { status } = useSession();
+    const { status,data:session } = useSession();
     const router = useRouter();
 
     async function addProductToWishlist() {
@@ -23,7 +23,7 @@ export default function AddToWishlist({productId, product} : {productId: string,
         try {
             const res = await fetch('/api/add-wishlist', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json',token: session?.token || '' },
                 body: JSON.stringify({ productId })
             })
 

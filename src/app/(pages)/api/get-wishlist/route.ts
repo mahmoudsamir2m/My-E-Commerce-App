@@ -3,9 +3,9 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/auth'
 
 export async function GET(_request: NextRequest) {
-  const session = await getServerSession(authOptions)
+  const token = _request.headers.get('token')
 
-  if (!session || !session.token) {
+  if (!token) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -13,7 +13,7 @@ export async function GET(_request: NextRequest) {
     const response = await fetch(`${process.env.URL_API || 'https://ecommerce.routemisr.com/api/v1'}/wishlist`, {
       method: 'GET',
       headers: {
-        'token': session.token as string
+        'token': token as string
       }
     })
 

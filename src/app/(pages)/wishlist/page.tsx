@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { CartContext } from '@/components/Context/CartContext';
 
+
 export default function Wishlist() {
   const { data: session, status } = useSession();
   const { getCart } = useContext(CartContext);
@@ -30,7 +31,11 @@ export default function Wishlist() {
   async function fetchWishlist() {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/get-wishlist');
+      const response = await fetch('/api/get-wishlist', {
+        headers: {
+          token: session?.token || ''
+        }
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch wishlist');
       }

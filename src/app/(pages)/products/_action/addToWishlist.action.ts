@@ -1,11 +1,8 @@
 'use server'
 
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/auth'
 
-export async function addToWishlistAction(productId: string) {
-    const session = await getServerSession(authOptions)
-    if (!session?.token) {
+export async function addToWishlistAction(productId: string,token:string|undefined) {
+    if (!token) {
         throw new Error('Unauthorized')
     }
 
@@ -13,7 +10,7 @@ export async function addToWishlistAction(productId: string) {
             method: 'POST',
             body : JSON.stringify({productId}),
             headers: {
-                token : session.token,
+                token : token,
                 "content-Type": "application/json"
             }
         });
