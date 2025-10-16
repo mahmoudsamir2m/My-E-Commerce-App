@@ -20,7 +20,7 @@ export default function Cart() {
   const [updateId, setUpdateId] = useState<string | null>(null);
   const [isClearing, setIsClearing] = useState<boolean>(false);
 
-  //Fetch cart data safely only when needed
+  // Fetch cart data safely only when needed
   useEffect(() => {
     if (
       !cartData ||
@@ -30,7 +30,7 @@ export default function Cart() {
     }
   }, [cartData, getCart]);
 
-  //Handle coupon apply message
+  // Handle coupon apply message
   const handleApply = () => {
     setShowMessage(true);
   };
@@ -158,20 +158,24 @@ export default function Cart() {
               >
                 {/* Product Info */}
                 <div className="flex items-center space-x-4 col-span-2">
-                  <Image
-                    src={item.product.imageCover}
-                    alt={item.product.title}
-                    className="rounded-sm w-16"
-                    width={64}
-                    height={64}
-                  />
+                  {item?.product?.imageCover && (
+                    <Image
+                      src={item.product.imageCover}
+                      alt={item?.product?.title || "Product"}
+                      className="rounded-sm w-16"
+                      width={64}
+                      height={64}
+                    />
+                  )}
                   <span className="font-medium">
-                    {item.product.title.split(" ", 3).join(" ")}
+                    {item?.product?.title
+                      ? item.product.title.split(" ", 3).join(" ")
+                      : "Unknown Product"}
                   </span>
                 </div>
 
                 {/* Price */}
-                <div className="text-gray-500">EGP {item.price}</div>
+                <div className="text-gray-500">EGP {item?.price ?? 0}</div>
 
                 {/* Quantity Controls */}
                 <div className="flex items-center space-x-2">
