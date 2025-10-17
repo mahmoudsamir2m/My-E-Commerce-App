@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().nonempty("Email is Required").email("Invalid email"),
@@ -34,6 +34,7 @@ type FormFields = z.infer<typeof formSchema>;
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<FormFields>({
     resolver: zodResolver(formSchema),
@@ -46,7 +47,7 @@ export function LoginForm() {
   async function onSubmit(values: FormFields) {
     setIsLoading(true);
     const res = await signIn("credentials", {
-      redirect: false, // Important: prevents page reload
+      redirect: false,
       email: values.email,
       password: values.password,
     });
@@ -56,7 +57,7 @@ export function LoginForm() {
       setErrorMessage(res.error);
       setTimeout(() => setErrorMessage(""), 2000);
     } else if (res?.ok) {
-      window.location.href = "/"; // redirect manually on success
+      window.location.href = "/";
     }
   }
 
@@ -105,21 +106,35 @@ export function LoginForm() {
                 )}
               />
 
-              {/* Password */}
+              {/* Password with toggle visibility */}
               <FormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Enter your password"
-                        {...field}
-                        className="p-3 border-gray-300 rounded-md"
-                      />
-                    </FormControl>
+                    <div className="relative">
+                      <FormControl>
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Enter your password"
+                          {...field}
+                          className="p-3 border-gray-300 rounded-md pr-10"
+                        />
+                      </FormControl>
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                        tabIndex={-1}
+                      >
+                        {showPassword ? (
+                          <EyeOff size={18} />
+                        ) : (
+                          <Eye size={18} />
+                        )}
+                      </button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react"; // ✅ import icons
 import {
   SuccessSignupResponse,
   FailedSignupResponse,
@@ -52,6 +52,8 @@ type FormFields = z.infer<typeof formSchema>;
 export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false); // state for password visibility
+  const [showRePassword, setShowRePassword] = useState(false); // state for rePassword visibility
   const router = useRouter();
 
   const form = useForm<FormFields>({
@@ -173,14 +175,27 @@ export function RegisterForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Enter your password"
-                        {...field}
-                        className="p-3 border-gray-300 rounded-md"
-                      />
-                    </FormControl>
+                    <div className="relative">
+                      <FormControl>
+                        <Input
+                          type={showPassword ? "text" : "password"} //toggle type
+                          placeholder="Enter your password"
+                          {...field}
+                          className="p-3 border-gray-300 rounded-md pr-10"
+                        />
+                      </FormControl>
+                      {/* Toggle icon */}
+                      <span
+                        className="absolute right-3 top-3 cursor-pointer text-gray-500 hover:text-gray-700"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                      >
+                        {showPassword ? (
+                          <EyeOff size={20} />
+                        ) : (
+                          <Eye size={20} />
+                        )}
+                      </span>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -193,14 +208,27 @@ export function RegisterForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Re-enter Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Re-enter your password"
-                        {...field}
-                        className="p-3 border-gray-300 rounded-md"
-                      />
-                    </FormControl>
+                    <div className="relative">
+                      <FormControl>
+                        <Input
+                          type={showRePassword ? "text" : "password"} //toggle type
+                          placeholder="Re-enter your password"
+                          {...field}
+                          className="p-3 border-gray-300 rounded-md pr-10"
+                        />
+                      </FormControl>
+                      {/* Toggle icon */}
+                      <span
+                        className="absolute right-3 top-3 cursor-pointer text-gray-500 hover:text-gray-700"
+                        onClick={() => setShowRePassword((prev) => !prev)}
+                      >
+                        {showRePassword ? (
+                          <EyeOff size={20} />
+                        ) : (
+                          <Eye size={20} />
+                        )}
+                      </span>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
