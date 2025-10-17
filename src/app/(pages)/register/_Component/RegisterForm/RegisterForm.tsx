@@ -82,7 +82,7 @@ export function RegisterForm() {
       if (!response.ok) {
         const message = payload.message || "Something went wrong.";
         setError(message);
-        setTimeout(() => setError(null), 1000);
+        setTimeout(() => setError(null), 1500);
         return;
       }
 
@@ -91,11 +91,11 @@ export function RegisterForm() {
       } else {
         const message = payload.message || "Signup failed.";
         setError(message);
-        setTimeout(() => setError(null), 1000);
+        setTimeout(() => setError(null), 1500);
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
-      setTimeout(() => setError(null), 1000);
+      setTimeout(() => setError(null), 1500);
     } finally {
       setIsLoading(false);
     }
