@@ -1,9 +1,9 @@
-"use client"
-import React, { useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
+"use client";
+import React, { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -11,13 +11,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import Image from "next/image"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Loader2 } from "lucide-react"
-import { SuccessSignupResponse, FailedSignupResponse } from "@/interfaces/signup"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import {
+  SuccessSignupResponse,
+  FailedSignupResponse,
+} from "@/interfaces/signup";
 
 const formSchema = z
   .object({
@@ -44,13 +47,12 @@ const formSchema = z
     path: ["rePassword"],
   });
 
-type FormFields = z.infer<typeof formSchema>
+type FormFields = z.infer<typeof formSchema>;
 
 export function RegisterForm() {
-
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string>("");
-    const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const form = useForm<FormFields>({
     resolver: zodResolver(formSchema),
@@ -61,40 +63,46 @@ export function RegisterForm() {
       rePassword: "",
       phone: "",
     },
-  })
+  });
 
   async function onSubmit(values: FormFields) {
     setIsLoading(true);
-    setError("");
+    setError(null);
+
     try {
       const response = await fetch(`/api/signup`, {
         method: "POST",
-        body: JSON.stringify({
-          name: values.name,
-          email: values.email,
-          password: values.password,
-          rePassword: values.rePassword,
-          phone: values.phone,
-        }),
-        headers: {"Content-Type": "application/json"}
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
       });
-      const payload: SuccessSignupResponse | FailedSignupResponse = await response.json();
 
-      if ('token' in payload) {
-        // Success, redirect to login
-        router.push('/login');
+      const payload: SuccessSignupResponse | FailedSignupResponse =
+        await response.json();
+
+      if (!response.ok) {
+        const message = payload.message || "Something went wrong.";
+        setError(message);
+        setTimeout(() => setError(null), 1000);
+        return;
+      }
+
+      if ("token" in payload) {
+        router.push("/login");
       } else {
-        setError(payload.message);
+        const message = payload.message || "Signup failed.";
+        setError(message);
+        setTimeout(() => setError(null), 1000);
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      setError("An unexpected error occurred. Please try again.");
+      setTimeout(() => setError(null), 1000);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }
 
   return (
     <div className="min-h-200 flex items-center justify-center p-4 font-sans">
-
       <div className="flex flex-col md:flex-row bg-white rounded-2xl shadow-2xl overflow-hidden w-full">
         {/* Left Section (Image) */}
         <div className="md:w-1/2 hidden md:flex items-center justify-center p-8 rounded-l-2xl">
@@ -109,8 +117,9 @@ export function RegisterForm() {
 
         {/* Right Section (Form) */}
         <div className="md:w-1/2 p-8 md:p-16 flex flex-col justify-center">
-          {error && <h2 className="font-bold text-red-500 my-5">{error}</h2>}
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">Sign up to Exclusive</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            Sign up to Exclusive
+          </h1>
           <p className="text-gray-600 mb-8 text-sm md:text-base">
             Enter your details below
           </p>
@@ -217,13 +226,20 @@ export function RegisterForm() {
                 )}
               />
 
+              {error && (
+                <div className="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md">
+                  {error}
+                </div>
+              )}
+
               <div className="flex items-center justify-between">
                 <Button
                   disabled={isLoading}
                   type="submit"
                   className="py-6 px-10 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-md shadow-md transition-colors duration-300 cursor-pointer"
                 >
-                  {isLoading && <Loader2 className="animate-spin"/>} Sign Up
+                  {isLoading && <Loader2 className="animate-spin mr-2" />} Sign
+                  Up
                 </Button>
                 <Link
                   href="/login"
@@ -237,5 +253,5 @@ export function RegisterForm() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,27 +1,36 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    const body = await request.json();
 
-    const response = await fetch('https://ecommerce.routemisr.com/api/v1/auth/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    })
+    const response = await fetch(
+      "https://ecommerce.routemisr.com/api/v1/auth/signup",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }
+    );
+
+    const data = await response.json().catch(() => null);
 
     if (!response.ok) {
-      const errorData = await response.text(); // Use text() for non-JSON errors
-      return NextResponse.json({ message: 'Signup failed', details: errorData }, { status: response.status })
+      const message =
+        data?.message ||
+        data?.errors?.msg ||
+        "Signup failed. Please check your data and try again.";
+
+      return NextResponse.json({ message }, { status: response.status });
     }
 
-    const data = await response.json()
-
-    return NextResponse.json(data, { status: response.status })
+    // نجاح العملية
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error('Signup proxy error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error("Signup proxy error:", error);
+    return NextResponse.json(
+      { message: "Internal server error. Please try again later." },
+      { status: 500 }
+    );
   }
 }
